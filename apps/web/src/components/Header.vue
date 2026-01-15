@@ -2,10 +2,7 @@
   <header class="header">
     <div class="header-content">
       <div class="logo">
-        <h1>📝 Site Bloc Note</h1>
-        <p class="subtitle">
-          Monorepo Turborepo + Vue.js + TypeScript + Express
-        </p>
+        <h1>Bloc Notes</h1>
       </div>
 
       <nav class="nav">
@@ -17,11 +14,19 @@
           Accueil
         </router-link>
         <router-link
-          to="/about"
+          to="/posts"
           class="nav-link"
-          :class="{ active: isActive('about') }"
+          :class="{ active: isActive('posts') }"
         >
-          À propos
+          Voir les posts
+        </router-link>
+        <!-- TODO: if login then the button should appear has deconnexion -->
+        <router-link
+          to="/login"
+          class="nav-link"
+          :class="{ active: isActive('list') }"
+        >
+          Se connecter
         </router-link>
       </nav>
     </div>

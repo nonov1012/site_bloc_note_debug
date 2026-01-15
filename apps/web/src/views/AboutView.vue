@@ -1,65 +1,7 @@
-<script setup lang="ts">
-const technologies = [
-  { name: 'Vue.js 3', description: 'Framework JavaScript progressif' },
-  { name: 'TypeScript', description: 'Typage statique pour JavaScript' },
-  { name: 'Vite', description: 'Build tool ultra-rapide' },
-  { name: 'Express', description: 'Framework backend Node.js' },
-  { name: 'Turborepo', description: 'Build system monorepo haute performance' }
-]
-
-const developers = [
-  { name: 'DAVID Gabriel', github: 'https://github.com/NockXu' },
-  { name: 'GUILMIN Leny', github: 'https://github.com/TarzanHR' }
-]
-</script>
-
 <template>
   <div class="about-view">
     <div class="container">
       <h2 class="page-title">À propos du projet</h2>
-
-      <section class="section">
-        <h3>Description</h3>
-        <p>
-          Ce projet est un exercice de maintenance applicative construit avec une architecture
-          monorepo moderne utilisant Turborepo. Il combine un backend API REST en TypeScript/Express
-          avec un frontend Vue.js 3.
-        </p>
-      </section>
-
-      <section class="section">
-        <h3>Technologies utilisées</h3>
-        <div class="tech-grid">
-          <div v-for="tech in technologies" :key="tech.name" class="tech-card">
-            <h4>{{ tech.name }}</h4>
-            <p>{{ tech.description }}</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h3>Équipe de développement</h3>
-        <div class="dev-grid">
-          <div v-for="dev in developers" :key="dev.name" class="dev-card">
-            <h4>{{ dev.name }}</h4>
-            <a :href="dev.github" target="_blank" rel="noopener" class="github-link">
-              Voir le profil GitHub →
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <h3>Architecture</h3>
-        <div class="architecture-info">
-          <p><strong>Monorepo Turborepo</strong> avec npm workspaces :</p>
-          <ul>
-            <li><code>apps/api</code> - Backend Express + TypeScript</li>
-            <li><code>apps/web</code> - Frontend Vue.js 3 + TypeScript</li>
-            <li><code>packages/</code> - Packages partagés (à venir)</li>
-          </ul>
-        </div>
-      </section>
 
       <section class="section cta">
         <router-link to="/" class="btn-primary">
@@ -69,6 +11,8 @@ const developers = [
     </div>
   </div>
 </template>
+
+<script setup lang="ts"></script>
 
 <style scoped>
 .about-view {
@@ -119,7 +63,9 @@ const developers = [
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .tech-card:hover,
@@ -174,7 +120,7 @@ const developers = [
   background: white;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   color: #667eea;
 }
 
@@ -190,7 +136,9 @@ const developers = [
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .btn-primary:hover {

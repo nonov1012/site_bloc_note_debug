@@ -1,36 +1,35 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useItems } from '../composables/useItems'
-import ItemForm from '../components/ItemForm.vue'
-import ItemList from '../components/ItemList.vue'
-import ErrorMessage from '../components/ErrorMessage.vue'
+import { onMounted } from "vue";
+import { useItems } from "../composables/useItems";
+import ErrorMessage from "../components/ErrorMessage.vue";
 
 // Utilisation du composable pour gérer les items
-const { items, loading, error, fetchItems, createItem, deleteItem } = useItems()
+const { items, loading, error, fetchItems, createItem, deleteItem } =
+  useItems();
 
 // Chargement initial des items
 onMounted(() => {
-  fetchItems()
-})
+  fetchItems();
+});
 
 // Gestionnaires d'événements
 const handleCreateItem = async (name: string) => {
-  await createItem({ name })
-}
+  await createItem({ name });
+};
 
 const handleDeleteItem = async (id: number) => {
-  await deleteItem(id)
-}
+  await deleteItem(id);
+};
 
 const handleCloseError = () => {
-  error.value = null
-}
+  error.value = null;
+};
 </script>
 
 <template>
   <div class="home-view">
     <div class="container">
-      <h2 class="page-title">Gestion des items</h2>
+      <h2 class="page-title">Bloc Notes</h2>
 
       <!-- Formulaire de création -->
       <ItemForm :loading="loading" @submit="handleCreateItem" />
