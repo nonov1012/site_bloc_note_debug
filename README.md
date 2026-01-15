@@ -100,6 +100,11 @@ Install all monorepo dependencies:
 
 ```bash
 npm install
+cd apps/api
+npm install
+cd ../web
+npm install
+cd ../..
 ```
 
 ## Configuration
