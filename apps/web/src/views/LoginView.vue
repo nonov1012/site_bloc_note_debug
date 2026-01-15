@@ -15,9 +15,11 @@ const isLogin = ref(true);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
-// Initialiser l'auth au montage du composant
+// Rediriger si déjà connecté
 onMounted(() => {
-  authStore.initAuth();
+  if (authStore.isAuthenticated) {
+    router.push("/");
+  }
 });
 
 const handleLogin = async (data: { username: string; password: string }) => {
@@ -34,7 +36,9 @@ const handleLogin = async (data: { username: string; password: string }) => {
     if (!isPasswordValid) {
       throw new Error("Mot de passe incorrect");
     } else {
-      authStore.login(user);
+      // Simuler un token (dans une vraie app, cela viendrait du backend)
+      const token = btoa(`${user.username}:${Date.now()}`);
+      authStore.login(user, token);
       router.push("/");
     }
   } catch (err) {
