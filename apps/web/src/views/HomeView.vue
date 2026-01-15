@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useNotes } from "../composables/useNotes";
 import ErrorMessage from "../components/ErrorMessage.vue";
 
@@ -7,13 +7,31 @@ import ErrorMessage from "../components/ErrorMessage.vue";
 const { loading, error, fetchRecentNotes } = useNotes();
 
 const recentNotes = ref<any[]>([]);
+let refreshInterval: number | null = null;
 
-// Chargement initial des notes récentes
-onMounted(async () => {
+// Fonction pour charger les notes
+const loadNotes = async () => {
   try {
     recentNotes.value = await fetchRecentNotes(10);
   } catch (error) {
     console.error("Erreur lors du chargement des notes récentes:", error);
+  }
+};
+
+// Chargement initial des notes récentes et configuration de l'auto-refresh
+onMounted(async () => {
+  await loadNotes();
+
+  // Auto-refresh toutes les 3 secondes
+  refreshInterval = window.setInterval(() => {
+    loadNotes();
+  }, 1000);
+});
+
+// Nettoyage de l'intervalle lors de la destruction du composant
+onUnmounted(() => {
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
   }
 });
 
@@ -50,7 +68,10 @@ const handleCloseError = () => {
         </div>
 
         <!-- État de chargement -->
-        <div v-if="loading && recentNotes.length === 0" class="text-center py-12">
+        <div
+          v-if="loading && recentNotes.length === 0"
+          class="text-center py-12"
+        >
           <div
             class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"
           ></div>
@@ -96,7 +117,7 @@ const handleCloseError = () => {
                   </p>
                   <div class="flex items-center gap-4 text-sm text-gray-400">
                     <span>
-                      Créée par : 
+                      Créée par :
                       <span v-if="note.user" class="font-medium text-gray-600">
                         {{ note.user.username }}
                       </span>
@@ -105,7 +126,7 @@ const handleCloseError = () => {
                       </span>
                     </span>
                     <span v-if="note.createdAt" class="text-gray-400">
-                      {{ new Date(note.createdAt).toLocaleDateString('fr-FR') }}
+                      {{ new Date(note.createdAt).toLocaleDateString("fr-FR") }}
                     </span>
                   </div>
                 </div>
