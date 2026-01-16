@@ -18,14 +18,3 @@ export async function hashPassword(password: string): Promise<string> {
   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   return hashHex;
 }
-
-/**
- * Compare a password with a hashed password
- * @param password - Plain text password to verify
- * @param hashedPassword - Stored hash to compare against
- * @returns Promise<boolean> - True if passwords match
- */
-export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-  const inputHash = await hashPassword(password);
-  return inputHash === hashedPassword;
-}

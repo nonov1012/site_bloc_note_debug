@@ -34,6 +34,7 @@ const authStore = useAuthStore();
 // Form reactive state
 const title = ref(""); // Note title input
 const content = ref(""); // Note content input
+const isSubmitting = ref(false); // Local submission state
 const notification = ref<{
   type: "success" | "error" | null; // Notification type
   message: string; // Notification message
@@ -97,7 +98,7 @@ const showNotification = (type: "success" | "error", message: string) => {
  * Validates form and creates note if valid
  */
 const handleCreateNote = async () => {
-  if (!isFormValid.value || hasErrors.value) {
+  if (!isFormValid.value || hasErrors.value || isSubmitting.value) {
     return;
   }
   
@@ -108,6 +109,9 @@ const handleCreateNote = async () => {
     showNotification("error", errorMsg);
     return;
   }
+  
+  // Set submitting state
+  isSubmitting.value = true;
   
   // Create note data object
   const noteData: CreateNoteDto = {
@@ -126,6 +130,9 @@ const handleCreateNote = async () => {
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : "Error creating note";
     showNotification("error", errorMsg);
+  } finally {
+    // Always reset submitting state
+    isSubmitting.value = false;
   }
 };
 
@@ -232,7 +239,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           v-model="title"
           type="text"
           placeholder="Give your note a title..."
-          :disabled="props.loading"
+          :disabled="props.loading || isSubmitting"
           maxlength="100"
           @keydown="handleKeyDown"
           class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all"
@@ -259,7 +266,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
           id="content"
           v-model="content"
           placeholder="Write your note content..."
-          :disabled="props.loading"
+          :disabled="props.loading || isSubmitting"
           rows="6"
           maxlength="2000"
           @keydown="handleKeyDown"
@@ -284,7 +291,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
         <button
           type="button"
           @click="title = ''; content = ''"
-          :disabled="props.loading"
+          :disabled="props.loading || isSubmitting"
           class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium transition-all hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Clear
@@ -293,14 +300,14 @@ const handleKeyDown = (event: KeyboardEvent) => {
         <!-- Submit Button -->
         <button
           type="submit"
-          :disabled="props.loading || !isFormValid || hasErrors"
+          :disabled="props.loading || !isFormValid || hasErrors || isSubmitting"
           class="px-8 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg font-medium transition-all hover:from-primary-600 hover:to-primary-700 hover:shadow-lg disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed disabled:shadow-none flex items-center gap-2"
         >
-          <svg v-if="props.loading" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+          <svg v-if="props.loading || isSubmitting" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          {{ props.loading ? "Creating..." : "Create Note" }}
+          {{ props.loading || isSubmitting ? "Creating..." : "Create Note" }}
         </button>
       </div>
     </form>

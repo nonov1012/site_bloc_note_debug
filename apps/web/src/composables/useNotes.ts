@@ -91,6 +91,7 @@ export function useNotes() {
    */
   const createNote = async (data: CreateNoteDto) => {
     try {
+      console.log('🔄 Setting loading to true');
       loading.value = true;
       error.value = null;
       const response = await fetch("/api/notes", {
@@ -110,6 +111,7 @@ export function useNotes() {
       console.error("Create note error:", err);
       throw err;
     } finally {
+      console.log('✅ Setting loading to false');
       loading.value = false;
     }
   };

@@ -50,9 +50,14 @@ const refreshUserNotes = () => {
  * @param data - Note data to create
  */
 const handleCreateNote = async (data: CreateNoteDto) => {
-  await createNote(data);
-  // Refresh notes list after creation
-  refreshUserNotes();
+  try {
+    await createNote(data);
+    // Refresh notes list after creation
+    refreshUserNotes();
+  } catch (error) {
+    // Error is already handled by useNotes composable
+    console.error('Error creating note:', error);
+  }
 };
 
 /**

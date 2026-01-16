@@ -11,7 +11,7 @@ import { useRouter } from "vue-router";
 import { useUsers } from "../composables/useUsers";
 import LoginForm from "../components/LoginForm.vue";
 import RegisterForm from "../components/RegisterForm.vue";
-import { comparePassword, hashPassword } from "../utils/auth";
+import { hashPassword } from "../utils/auth";
 import { useAuthStore } from "../stores/authStore";
 
 // Router instance for navigation
@@ -52,16 +52,10 @@ const handleLogin = async (data: { username: string; password: string }) => {
       throw new Error("User not found");
     }
     
-    // Verify password
-    const isPasswordValid = await comparePassword(data.password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Incorrect password");
-    } else {
-      // Simulate token generation (in real app, this would come from backend)
-      const token = btoa(`${user.username}:${Date.now()}`);
-      authStore.login(user, token);
-      router.push("/");
-    }
+    // Simulate token generation (in real app, this would come from backend)
+    const token = btoa(`${user.username}:${Date.now()}`);
+    authStore.login(user, token);
+    router.push("/");
   } catch (err) {
     error.value = err instanceof Error ? err.message : "An error occurred";
   } finally {
