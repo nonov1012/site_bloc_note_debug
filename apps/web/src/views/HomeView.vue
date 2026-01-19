@@ -80,6 +80,10 @@ const loadMoreSearchResults = async () => {
  */
 const handleSearchChange = (query: string) => {
   searchQuery.value = query;
+  if (refreshInterval) {
+    clearInterval(refreshInterval);
+    refreshInterval = null;
+  }
   debounceSearch(query);
 };
 
@@ -91,6 +95,15 @@ const handleSearchClear = async () => {
   searchQuery.value = "";
   isSearchMode.value = false;
   await loadNotes(true);
+  
+  // Resume auto-refresh when search is cleared
+  if (!refreshInterval) {
+    refreshInterval = window.setInterval(() => {
+      if (!isSearchMode.value) {
+        loadNotes();
+      }
+    }, 3000);
+  }
 };
 
 /**
@@ -140,10 +153,12 @@ const loadMoreNotes = async () => {
 onMounted(async () => {
   await loadNotes();
 
-  // Auto-refresh every 3 seconds
+  // Auto-refresh every 3 seconds, but skip if in search mode
   refreshInterval = window.setInterval(() => {
-    loadNotes();
-  }, 1000);
+    if (!isSearchMode.value) {
+      loadNotes();
+    }
+  }, 3000);
 });
 
 /**
