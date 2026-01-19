@@ -114,12 +114,11 @@ cd ../..
 Create a `.env` file in `apps/api/`:
 
 ```env
-PORT=3000
+DATABASE_URL="mysql://u30_xS0FHyZIPQ:geskI=w41ko.Fx5w1=ObTDK=@database.tarzanhr.fr:3306/s30_bloc_note"
 NODE_ENV=development
-DATABASE_URL="mysql://user:password@host:3306/database_name"
+PORT=3000
+HOST=0.0.0.0
 ```
-
-**Important**: Replace the values with your MySQL credentials (or ask us for them).
 
 ### Database
 
