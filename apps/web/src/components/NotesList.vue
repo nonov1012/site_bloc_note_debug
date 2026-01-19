@@ -34,6 +34,10 @@ const expandedNotes = ref<Set<number>>(new Set());
 const replyFormOpen = ref<Set<number>>(new Set());
 // Reply form content for each note
 const replyContent = ref<Map<number, { titre: string; contenu: string }>>(new Map());
+// Track likes for each note
+const likedNotes = ref<Set<number>>(new Set(
+  JSON.parse(localStorage.getItem('likedNotes') || '[]')
+));
 
 // Toggle replies visibility
 const toggleReplies = (noteId: number) => {
@@ -42,6 +46,17 @@ const toggleReplies = (noteId: number) => {
   } else {
     expandedNotes.value.add(noteId);
   }
+};
+
+// Toggle like on note
+const toggleLike = (noteId: number) => {
+  if (likedNotes.value.has(noteId)) {
+    likedNotes.value.delete(noteId);
+  } else {
+    likedNotes.value.add(noteId);
+  }
+  // Save to localStorage
+  localStorage.setItem('likedNotes', JSON.stringify(Array.from(likedNotes.value)));
 };
 
 // Toggle reply form
@@ -184,6 +199,25 @@ const timeAgo = (dateString: string) => {
 
               <!-- Note actions -->
               <div class="flex items-center gap-4 text-sm">
+                <!-- Like button -->
+                <button
+                  @click="toggleLike(note.id)"
+                  class="flex items-center gap-1 transition-colors"
+                  :class="likedNotes.has(note.id) 
+                    ? 'text-red-500 hover:text-red-600' 
+                    : 'text-gray-500 hover:text-red-500'"
+                >
+                  <svg 
+                    class="w-4 h-4" 
+                    :fill="likedNotes.has(note.id) ? 'currentColor' : 'none'"
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span>{{ likedNotes.has(note.id) ? 'Liked' : 'Like' }}</span>
+                </button>
+
                 <!-- Reply button -->
                 <button
                   v-if="authStore.isAuthenticated"
