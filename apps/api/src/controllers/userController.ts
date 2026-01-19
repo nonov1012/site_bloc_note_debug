@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import config from '../config/config';
 
 // Create a user
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -115,8 +117,16 @@ export const loginUser = async (req: Request, res: Response, next: NextFunction)
       res.status(401).json({ message: 'Invalid credentials' });
       return;
     }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      config.jwtSecret,
+      { expiresIn: '24h' }
+    );
+
     const { password: _, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    res.json({ ...userWithoutPassword, token });
   } catch (error) {
     next(error);
   }
