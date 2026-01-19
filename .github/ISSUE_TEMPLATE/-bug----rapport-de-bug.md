@@ -1,8 +1,8 @@
 ---
-name: Rapport de bug
+name: "[Bug] - Rapport de bug"
 about: Signaler un problème rencontré
-title: ''
-labels: ''
+title: "[BUG] - "
+labels: BUG
 assignees: ''
 
 ---
