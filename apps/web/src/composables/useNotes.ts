@@ -9,6 +9,7 @@
  */
 import { ref } from "vue";
 import type { Note, CreateNoteDto, UpdateNoteDto } from "../types/note";
+import { authFetch } from "../utils/api";
 
 export function useNotes() {
   // Reactive state
@@ -91,16 +92,15 @@ export function useNotes() {
    */
   const createNote = async (data: CreateNoteDto) => {
     try {
-      console.log('🔄 Setting loading to true');
       loading.value = true;
       error.value = null;
-      const response = await fetch("/api/notes", {
+      const response = await authFetch("/api/notes", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("Failed to create note");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create note");
       }
       const newNote = await response.json();
       notes.value.push(newNote);
@@ -111,7 +111,6 @@ export function useNotes() {
       console.error("Create note error:", err);
       throw err;
     } finally {
-      console.log('✅ Setting loading to false');
       loading.value = false;
     }
   };
@@ -126,13 +125,13 @@ export function useNotes() {
     try {
       loading.value = true;
       error.value = null;
-      const response = await fetch(`/api/notes/${id}`, {
+      const response = await authFetch(`/api/notes/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("Erreur lors de la mise à jour de la note");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la mise à jour de la note");
       }
       const updatedNote = await response.json();
       const index = notes.value.findIndex((note) => note.id === id);
@@ -154,11 +153,12 @@ export function useNotes() {
     try {
       loading.value = true;
       error.value = null;
-      const response = await fetch(`/api/notes/${id}`, {
+      const response = await authFetch(`/api/notes/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Erreur lors de la suppression de la note");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Erreur lors de la suppression de la note");
       }
       notes.value = notes.value.filter((note) => note.id !== id);
     } catch (err) {

@@ -46,10 +46,10 @@ const handleLogin = async (data: { username: string; password: string }) => {
     error.value = null;
 
     // Login via API (password verification done server-side with bcrypt)
-    const user = await login(data.username, data.password);
+    const response = await login(data.username, data.password);
 
-    // Simulate token generation (in real app, this would come from backend)
-    const token = btoa(`${user.username}:${Date.now()}`);
+    // Use JWT token from server
+    const { token, ...user } = response;
     authStore.login(user, token);
     router.push("/");
   } catch (err) {

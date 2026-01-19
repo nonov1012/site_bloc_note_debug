@@ -8,6 +8,7 @@
  */
 import { ref } from "vue";
 import type { User, CreateUserDto, UpdateUserDto } from "../types/user";
+import { authFetch } from "../utils/api";
 
 export function useUsers() {
   // Reactive state
@@ -125,13 +126,13 @@ export function useUsers() {
     try {
       loading.value = true;
       error.value = null;
-      const response = await fetch(`/api/users/${id}`, {
+      const response = await authFetch(`/api/users/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
       if (!response.ok) {
-        throw new Error("Failed to update user");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update user");
       }
       const updatedUser = await response.json();
       const index = users.value.findIndex((user) => user.id === id);
@@ -157,11 +158,12 @@ export function useUsers() {
     try {
       loading.value = true;
       error.value = null;
-      const response = await fetch(`/api/users/${id}`, {
+      const response = await authFetch(`/api/users/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error("Failed to delete user");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete user");
       }
       users.value = users.value.filter((user) => user.id !== id);
     } catch (err) {

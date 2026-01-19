@@ -1,15 +1,18 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/database';
+import { AuthRequest } from '../middlewares/auth';
 
 // Create a note (or reply to another note)
-export const createNote = async (req: Request, res: Response, next: NextFunction) => {
+export const createNote = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { titre, contenu, userId, parentId } = req.body;
+    const { titre, contenu, parentId } = req.body;
+    // Use authenticated user's ID instead of accepting userId from body
+    const userId = req.user!.id;
     const newNote = await prisma.note.create({
       data: {
         titre,
         contenu,
-        userId: parseInt(userId, 10),
+        userId,
         parentId: parentId ? parseInt(parentId, 10) : null
       },
       include: {
@@ -102,15 +105,27 @@ export const getNotesByUserId = async (req: Request, res: Response, next: NextFu
   }
 };
 
-// Update note
-export const updateNote = async (req: Request, res: Response, next: NextFunction) => {
+// Update note (only owner can update)
+export const updateNote = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const id = parseInt(idParam, 10);
-    const { titre, contenu, userId } = req.body;
+
+    // Check if note exists and belongs to user
+    const note = await prisma.note.findUnique({ where: { id } });
+    if (!note) {
+      res.status(404).json({ message: 'Note not found' });
+      return;
+    }
+    if (note.userId !== req.user!.id) {
+      res.status(403).json({ message: 'Access denied: you can only modify your own notes' });
+      return;
+    }
+
+    const { titre, contenu } = req.body;
     const updatedNote = await prisma.note.update({
       where: { id },
-      data: { titre, contenu, userId: userId ? parseInt(userId, 10) : undefined },
+      data: { titre, contenu },
       include: { user: true },
     });
     res.json(updatedNote);
@@ -119,11 +134,23 @@ export const updateNote = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// Delete note
-export const deleteNote = async (req: Request, res: Response, next: NextFunction) => {
+// Delete note (only owner can delete)
+export const deleteNote = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const id = parseInt(idParam, 10);
+
+    // Check if note exists and belongs to user
+    const note = await prisma.note.findUnique({ where: { id } });
+    if (!note) {
+      res.status(404).json({ message: 'Note not found' });
+      return;
+    }
+    if (note.userId !== req.user!.id) {
+      res.status(403).json({ message: 'Access denied: you can only delete your own notes' });
+      return;
+    }
+
     const deletedNote = await prisma.note.delete({
       where: { id },
     });

@@ -13,6 +13,7 @@ import {
   deleteUser,
   loginUser,
 } from '../controllers/userController';
+import { authenticate, authorizeUser } from '../middlewares/auth';
 
 const router = Router();
 
@@ -170,7 +171,7 @@ router.post('/', createUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', updateUser);
+router.put('/:id', authenticate, authorizeUser, updateUser);
 
 /**
  * @swagger
@@ -199,7 +200,7 @@ router.put('/:id', updateUser);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', deleteUser);
+router.delete('/:id', authenticate, authorizeUser, deleteUser);
 
 /**
  * @swagger

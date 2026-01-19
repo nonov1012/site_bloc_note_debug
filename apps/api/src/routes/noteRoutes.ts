@@ -13,6 +13,7 @@ import {
   deleteNote,
   getRepliesByNoteId,
 } from '../controllers/noteController';
+import { authenticate } from '../middlewares/auth';
 
 const router = Router();
 
@@ -132,7 +133,7 @@ router.get('/user/:userId', getNotesByUserId);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/', createNote);
+router.post('/', authenticate, createNote);
 
 /**
  * @swagger
@@ -177,7 +178,7 @@ router.post('/', createNote);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/:id', updateNote);
+router.put('/:id', authenticate, updateNote);
 
 /**
  * @swagger
@@ -206,7 +207,7 @@ router.put('/:id', updateNote);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.delete('/:id', deleteNote);
+router.delete('/:id', authenticate, deleteNote);
 
 /**
  * @swagger
