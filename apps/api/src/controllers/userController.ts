@@ -6,8 +6,9 @@ import bcrypt from 'bcrypt';
 export const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { username, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await prisma.user.create({
-      data: { username, password },
+      data: { username, password: hashedPassword },
     });
     res.status(201).json(newUser);
   } catch (error) {
@@ -70,9 +71,12 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const id = parseInt(idParam, 10);
     const { username, password } = req.body;
+    const data: { username?: string; password?: string } = {};
+    if (username) data.username = username;
+    if (password) data.password = await bcrypt.hash(password, 10);
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { username, password },
+      data,
     });
     res.json(updatedUser);
   } catch (error) {
@@ -89,6 +93,30 @@ export const deleteUser = async (req: Request, res: Response, next: NextFunction
       where: { id },
     });
     res.json(deletedUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Login user
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { username, password } = req.body;
+    const user = await prisma.user.findUnique({
+      where: { username },
+      include: { notes: true },
+    });
+    if (!user) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    }
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error) {
     next(error);
   }

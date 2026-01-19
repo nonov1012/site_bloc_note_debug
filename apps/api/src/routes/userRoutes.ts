@@ -11,6 +11,7 @@ import {
   getUserByUsername,
   updateUser,
   deleteUser,
+  loginUser,
 } from '../controllers/userController';
 
 const router = Router();
@@ -199,5 +200,43 @@ router.put('/:id', updateUser);
  *               $ref: '#/components/schemas/Error'
  */
 router.delete('/:id', deleteUser);
+
+/**
+ * @swagger
+ * /api/users/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: john_doe
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post('/login', loginUser);
 
 export default router;
