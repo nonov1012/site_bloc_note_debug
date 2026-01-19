@@ -1,4 +1,6 @@
-# Site Bloc Note
+# Site Bloc Note Debug
+
+> this is a fork for the repository [Site Bloc Note](https://github.com/NockXu/site_bloc_note)
 
 Notes management application with users - Application maintenance exercise
 
@@ -10,15 +12,15 @@ Monorepo using Turborepo with:
 - **Web Frontend**: Vue.js 3 application with TypeScript and Vite
 - **Database**: MySQL with Prisma ORM
 
-## Dev Team 4
+## Original Dev Team 4
 
 [DAVID Gabriel](https://github.com/NockXu)
 [GUILMIN Leny](https://github.com/TarzanHR)
 
-## Dev Team <numéro du groupe>
+## Maintenance Dev Team 5
 
-[]()
-[]()
+[VOITURIER Noa](https://github.com/nonov1012)
+[NOEL Clément](https://github.com/reclea)
 
 ## Technologies
 
