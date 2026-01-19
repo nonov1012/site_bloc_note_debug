@@ -174,6 +174,36 @@ export function useUsers() {
     }
   };
 
+  /**
+   * Login user with credentials
+   * @param username - The username
+   * @param password - The password
+   * @returns Promise<User> - The authenticated user
+   */
+  const login = async (username: string, password: string) => {
+    try {
+      loading.value = true;
+      error.value = null;
+      const response = await fetch("/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Invalid credentials");
+      }
+      return await response.json();
+    } catch (err) {
+      error.value =
+        err instanceof Error ? err.message : "An error occurred";
+      console.error("Login error:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   // Return reactive state and methods
   return {
     users,
@@ -185,5 +215,6 @@ export function useUsers() {
     createUser,
     updateUser,
     deleteUser,
+    login,
   };
 }

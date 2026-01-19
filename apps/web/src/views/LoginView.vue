@@ -11,13 +11,12 @@ import { useRouter } from "vue-router";
 import { useUsers } from "../composables/useUsers";
 import LoginForm from "../components/LoginForm.vue";
 import RegisterForm from "../components/RegisterForm.vue";
-import { hashPassword } from "../utils/auth";
 import { useAuthStore } from "../stores/authStore";
 
 // Router instance for navigation
 const router = useRouter();
 // User management composable
-const { createUser, fetchUserByUsername } = useUsers();
+const { createUser, login } = useUsers();
 // Authentication store
 const authStore = useAuthStore();
 
@@ -46,17 +45,8 @@ const handleLogin = async (data: { username: string; password: string }) => {
     loading.value = true;
     error.value = null;
 
-    // Fetch user from database
-    const user = await fetchUserByUsername(data.username);
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Verify password
-    const hashedPassword = await hashPassword(data.password);
-    if (hashedPassword !== user.password) {
-      throw new Error("Invalid password");
-    }
+    // Login via API (password verification done server-side with bcrypt)
+    const user = await login(data.username, data.password);
 
     // Simulate token generation (in real app, this would come from backend)
     const token = btoa(`${user.username}:${Date.now()}`);
@@ -78,14 +68,13 @@ const handleRegister = async (data: { username: string; password: string }) => {
   try {
     loading.value = true;
     error.value = null;
-    
-    // Hash password for security
-    const hashedPassword = await hashPassword(data.password);
+
+    // Create user (password hashing done server-side with bcrypt)
     await createUser({
       username: data.username,
-      password: hashedPassword,
+      password: data.password,
     });
-    
+
     // After registration, switch to login mode
     isLogin.value = true;
     error.value = null;
