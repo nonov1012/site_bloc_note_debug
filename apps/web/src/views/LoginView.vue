@@ -45,13 +45,19 @@ const handleLogin = async (data: { username: string; password: string }) => {
   try {
     loading.value = true;
     error.value = null;
-    
+
     // Fetch user from database
     const user = await fetchUserByUsername(data.username);
     if (!user) {
       throw new Error("User not found");
     }
-    
+
+    // Verify password
+    const hashedPassword = await hashPassword(data.password);
+    if (hashedPassword !== user.password) {
+      throw new Error("Invalid password");
+    }
+
     // Simulate token generation (in real app, this would come from backend)
     const token = btoa(`${user.username}:${Date.now()}`);
     authStore.login(user, token);
